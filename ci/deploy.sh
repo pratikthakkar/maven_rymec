@@ -22,17 +22,32 @@ echo "→ Starting Spring Boot (java -jar)…"
 nohup java -jar target/*.jar --server.port=8888 > boot.log 2>&1 &
 
 # 6. Wait for health
-echo "→ Waiting for /actuator/health (max ~60s)…"
+# echo "→ Waiting for /actuator/health (max ~60s)…"
+# for i in {1..30}; do
+#   if curl -s http://localhost:8888/actuator/health \
+#        | grep -q '"status":"UP"' ; then
+#     echo "✅ Application is healthy!"
+#     exit 0
+#   fi
+#   echo "   …still waiting ($i/30)…"
+#   sleep 2
+# done
+
+# echo "❌ Application didn’t come up in time. Dumping boot.log:"
+# tail -n 50 boot.log
+# exit 1
+
+echo "→ Waiting for HTTP 200 on http://localhost:8888 …"
 for i in {1..30}; do
-  if curl -s http://localhost:8888/actuator/health \
-       | grep -q '"status":"UP"' ; then
-    echo "✅ Application is healthy!"
+  if curl -s -o /dev/null -w "%{http_code}" http://localhost:8888 | grep -q "^200$"; then
+    echo "✅ Application is responding!"
     exit 0
   fi
-  echo "   …still waiting ($i/30)…"
+  echo "   …waiting ($i/30)…"
   sleep 2
 done
 
-echo "❌ Application didn’t come up in time. Dumping boot.log:"
+echo "❌ App never responded—here’s the last 50 lines of boot.log:"
 tail -n 50 boot.log
 exit 1
+
