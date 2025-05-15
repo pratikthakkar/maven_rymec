@@ -1,6 +1,7 @@
 - name: Deploy Spring Boot App Locally
   hosts: localhost
   become: yes
+
   tasks:
     - name: Ensure deployment directory exists
       file:
@@ -8,9 +9,13 @@
         state: directory
         mode: '0755'
 
+    - name: Determine the built JAR file
+      set_fact:
+        jar_file: "{{ lookup('fileglob', playbook_dir + '/../target/*.jar', wantlist=True)[0] }}"
+
     - name: Copy built jar to deployment location
       copy:
-        src: "{{ playbook_dir }}/../target/student-passfail-0.0.1-SNAPSHOT.jar"
+        src: "{{ jar_file }}"
         dest: /opt/student-app/student-passfail.jar
         mode: '0755'
 
@@ -18,14 +23,7 @@
       shell: |
         if [ -f /opt/student-app/student-passfail.pid ]; then
           pid=$(cat /opt/student-app/student-passfail.pid)
-          if kill -0 "$pid" 2>/dev/null; then
-            echo "→ Killing old app (PID $pid)"
-            kill "$pid" || true
-          else
-            echo "→ No process running at PID $pid"
-          fi
-        else
-          echo "→ No pidfile found, nothing to kill"
+          kill "$pid" || true
         fi
       args:
         executable: /bin/bash
@@ -37,3 +35,11 @@
         echo $! > /opt/student-app/student-passfail.pid
       args:
         executable: /bin/bash
+
+    - name: Wait for the app to respond on port 8888
+      uri:
+        url: http://localhost:8888
+        status_code: 200
+        retries: 30
+        delay: 2
+        timeout: 5
