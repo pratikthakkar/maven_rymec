@@ -1,0 +1,22 @@
+- name: Deploy Spring Boot App Locally
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Ensure deployment directory exists
+      file:
+        path: /opt/student-app
+        state: directory
+        mode: '0755'
+
+    - name: Copy built jar to deployment location
+      copy:
+        src: target/student-passfail.jar
+        dest: /opt/student-app/student-passfail.jar
+        mode: '0755'
+
+    - name: Kill any running app
+      shell: pkill -f student-passfail.jar || true
+
+    - name: Start Spring Boot app
+      shell: |
+        nohup java -jar /opt/student-app/student-passfail.jar --server.port=8888 > /opt/student-app/app.log 2>&1 &
