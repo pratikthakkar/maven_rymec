@@ -2,6 +2,7 @@
   hosts: localhost
   become: yes
   tasks:
+
     - name: Ensure deployment directory exists
       file:
         path: /opt/student-app
@@ -10,7 +11,8 @@
 
     - name: Copy built jar to deployment location
       copy:
-        src: target/student-passfail.jar
+        # Use playbook_dir so this works no matter where you call ansible-playbook from
+        src: "{{ playbook_dir }}/../target/student-passfail-0.0.1-SNAPSHOT.jar"
         dest: /opt/student-app/student-passfail.jar
         mode: '0755'
 
@@ -19,4 +21,5 @@
 
     - name: Start Spring Boot app
       shell: |
-        nohup java -jar /opt/student-app/student-passfail.jar --server.port=8888 > /opt/student-app/app.log 2>&1 &
+        nohup java -jar /opt/student-app/student-passfail.jar --server.port=8888 \
+          > /opt/student-app/app.log 2>&1 &
