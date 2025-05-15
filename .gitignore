@@ -1,0 +1,36 @@
+# Maven target directory
+/target/
+
+# Logs
+*.log
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# IntelliJ IDEA
+*.iml
+.idea/
+out/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build output
+/build/
+
+# Environment files
+.env
+
+# Mac system files
+.AppleDouble
+.LSOverride
+
+# Others
+*.swp
+*~

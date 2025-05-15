@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Result - Student Pass/Fail Checker</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>Result</h1>
+    <p>Name: <span th:text="${name}">Name</span></p>
+    <p>Semester: <span th:text="${sem}">Semester</span></p>
+    <p>Percentage: <span th:text="${percentage}">0</span>%</p>
+    <p>Status: <strong th:text="${result}">Pass/Fail</strong></p>
+    <a th:href="@{/}">Check Another Student</a>
+    <br>
+    <a th:href="@{/students}">View All Students</a>
+</body>
+</html>

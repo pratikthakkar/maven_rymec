@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>All Students - Student Pass/Fail Checker</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>All Students</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Semester</th>
+                <th>Percentage</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="student : ${students}">
+                <td th:text="${student.id}">1</td>
+                <td th:text="${student.name}">Name</td>
+                <td th:text="${student.sem}">Semester</td>
+                <td th:text="${student.percentage}">0</td>
+                <td th:text="${student.result}">Pass/Fail</td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <a th:href="@{/}">Check Another Student</a>
+</body>
+</html>
