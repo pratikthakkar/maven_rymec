@@ -23,7 +23,10 @@
       shell: |
         if [ -f /opt/student-app/student-passfail.pid ]; then
           pid=$(cat /opt/student-app/student-passfail.pid)
-          kill "$pid" || true
+          if kill -0 "$pid" 2>/dev/null; then
+            echo "→ Killing old app (PID $pid)"
+            kill "$pid" || true
+          fi
         fi
       args:
         executable: /bin/bash
@@ -36,10 +39,19 @@
       args:
         executable: /bin/bash
 
-    - name: Wait for the app to respond on port 8888
-      uri:
-        url: http://localhost:8888
-        status_code: 200
-        retries: 30
-        delay: 2
-        timeout: 5
+    - name: Wait until application returns HTTP 200
+      shell: |
+        count=0
+        until curl -s -o /dev/null -w "%{http_code}" http://localhost:8888 | grep -q "^200$"; do
+          count=$((count+1))
+          if [ $count -ge 30 ]; then
+            echo "❌ App did not respond within $((30*2)) seconds"
+            tail -n 30 /opt/student-app/app.log
+            exit 1
+          fi
+          echo "   …waiting for app to be up ($count/30)…"
+          sleep 2
+        done
+        echo "✅ Application is up!"
+      args:
+        executable: /bin/bash
