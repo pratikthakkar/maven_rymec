@@ -4,7 +4,7 @@ export BUILD_ID=dontKillMe
 # 1. Ensure we're in the workspace (contains pom.xml / target/)
 cd "$(dirname "$0")/.."    # if deploy.sh lives in ci/, adjust accordingly
 echo "→ Workspace: $(pwd)"
-
+echo "hello world"
 # 2. Build the JAR
 echo "→ Building the project…"
 mvn clean package -DskipTests
