@@ -56,4 +56,4 @@
       args:
         executable: /bin/bash
       environment:
-        BUILD_ID: "{{ protected_build_id }}"
+        BUILD_ID: "dontKillMe"
