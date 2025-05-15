@@ -24,12 +24,8 @@
         else
           echo "→ No running app to kill"
         fi
-      args:
-        warn: false
 
     - name: Start Spring Boot app
       shell: |
         nohup java -jar /opt/student-app/student-passfail.jar --server.port=8888 \
           > /opt/student-app/app.log 2>&1 &
-      args:
-        warn: false
