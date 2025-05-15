@@ -1,7 +1,6 @@
 - name: Deploy Spring Boot App Locally
   hosts: localhost
   become: yes
-
   tasks:
     - name: Ensure deployment directory exists
       file:
@@ -15,17 +14,26 @@
         dest: /opt/student-app/student-passfail.jar
         mode: '0755'
 
-    - name: Kill any running app (only Java process)
+    - name: Stop old Spring Boot process (via pidfile)
       shell: |
-        pids=$(pgrep -f 'java -jar /opt/student-app/student-passfail.jar') || true
-        if [ -n "$pids" ]; then
-          echo "→ Killing PIDs: $pids"
-          kill $pids || true
+        if [ -f /opt/student-app/student-passfail.pid ]; then
+          pid=$(cat /opt/student-app/student-passfail.pid)
+          if kill -0 "$pid" 2>/dev/null; then
+            echo "→ Killing old app (PID $pid)"
+            kill "$pid" || true
+          else
+            echo "→ No process running at PID $pid"
+          fi
         else
-          echo "→ No running app to kill"
+          echo "→ No pidfile found, nothing to kill"
         fi
+      args:
+        executable: /bin/bash
 
-    - name: Start Spring Boot app
+    - name: Start Spring Boot app and record PID
       shell: |
         nohup java -jar /opt/student-app/student-passfail.jar --server.port=8888 \
           > /opt/student-app/app.log 2>&1 &
+        echo $! > /opt/student-app/student-passfail.pid
+      args:
+        executable: /bin/bash
